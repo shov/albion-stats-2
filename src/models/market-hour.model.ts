@@ -9,7 +9,7 @@ export class MarketHour extends Entity {
         id: true,
         generated: true,
     })
-    id?: number
+    id: number
 
     @belongsTo(() => Zone, {keyTo: 'id'}, {required: true})
     zoneId: number

@@ -1,13 +1,21 @@
 import {Entity, hasMany, model, property} from '@loopback/repository'
 import {MarketHour} from './market-hour.model'
 
-@model()
+@model({
+    settings: {
+        indexes: {
+            zoneUniqueNameIdx: {
+                keys: {uniqueName: 1,},
+                options: {unique: false,},
+            },
+        }
+    }
+})
 export class Zone extends Entity {
     @property({
         type: 'string',
         id: true,
         generated: false,
-        required: true,
     })
     id: string
 
