@@ -5,8 +5,8 @@ import {MarketHour} from './market-hour.model'
     settings: {
         indexes: {
             zoneUniqueNameIdx: {
-                keys: {uniqueName: 1,},
-                options: {unique: false,},
+                keys: {uniqueName: 1},
+                options: {unique: false},
             },
         }
     }

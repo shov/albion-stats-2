@@ -2,7 +2,28 @@ import {Zone, ZoneWithRelations} from './zone.model'
 import {Item, ItemWithRelations} from './item.model'
 import {Entity, model, property, belongsTo} from '@loopback/repository'
 
-@model()
+@model({
+    settings: {
+        indexes: {
+            marketHourZoneIdIdx: {
+                keys: {zoneId: 1},
+                options: {unique: false},
+            },
+            marketHourItemUniqueNameIdx: {
+                keys: {itemUniqueName: 1},
+                options: {unique: false},
+            },
+            marketHourSnapDateTimeIdx: {
+                keys: {snapDateTime: 1},
+                options: {unique: false},
+            },
+            marketHourTypeIdx: {
+                keys: {type: 1},
+                options: {unique: false},
+            }
+        }
+    }
+})
 export class MarketHour extends Entity {
     @property({
         type: 'number',
@@ -21,7 +42,7 @@ export class MarketHour extends Entity {
         type: 'date',
         required: true,
     })
-    snapTime: string
+    snapDateTime: string
 
     @property({
         type: 'string',
