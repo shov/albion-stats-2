@@ -12,8 +12,8 @@ import {MarketHour} from './market-hour.model'
                 keys: {tier: 1},
                 options: {unique: false},
             },
-            itemQualityIdx: {
-                keys: {quality: 1},
+            itemEnchantmentIdx: {
+                keys: {enchantment: 1},
                 options: {unique: false},
             },
         }
@@ -47,7 +47,7 @@ export class Item extends Entity {
     @property({
         type: 'number',
     })
-    quality?: number
+    enchantment?: number
 
     @property({
         type: 'string',

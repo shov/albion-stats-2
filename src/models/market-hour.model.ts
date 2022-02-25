@@ -13,13 +13,25 @@ import {Entity, model, property, belongsTo} from '@loopback/repository'
                 keys: {itemUniqueName: 1},
                 options: {unique: false},
             },
+            marketHourQualityIdx: {
+                keys: {quality: 1},
+                options: {unique: false},
+            },
             marketHourSnapDateTimeIdx: {
                 keys: {snapDateTime: 1},
                 options: {unique: false},
             },
-            marketHourTypeIdx: {
-                keys: {type: 1},
+            marketHourDirectionIdx: {
+                keys: {direction: 1},
                 options: {unique: false},
+            },
+            marketHourThresholdIdx: {
+                keys: {threshold: 1},
+                options: {unique: false},
+            },
+            marketHourUniq: {
+                keys: {zoneId: 1, itemUniqueName: 1, quality: 1, snapDateTime: 1, direction: 1, threshold: 1,},
+                options: {unique: true},
             }
         }
     }
@@ -39,6 +51,12 @@ export class MarketHour extends Entity {
     itemUniqueName: string
 
     @property({
+        type: 'number',
+        required: true,
+    })
+    quality: number
+
+    @property({
         type: 'date',
         required: true,
     })
@@ -48,7 +66,13 @@ export class MarketHour extends Entity {
         type: 'string',
         required: true,
     })
-    type: string
+    direction: string
+
+    @property({
+        type: 'string',
+        required: true,
+    })
+    threshold: string
 
     @property({
         type: 'number',

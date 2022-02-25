@@ -58,6 +58,7 @@
     "@loopback/service-proxy": "^4.0.1",
     "axios": "^0.26.0",
     "loopback-connector-postgresql": "^5.5.0",
+    "node-cron": "^3.0.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

@@ -1,5 +1,4 @@
 import {
-    inject,
     /* inject, Application, CoreBindings, */
     lifeCycleObserver, // The decorator
     LifeCycleObserver, // The interface
@@ -7,7 +6,6 @@ import {
 import {repository} from '@loopback/repository'
 import {ItemRepository, ZoneRepository} from '../repositories'
 import axios from 'axios'
-import {LoggingBindings, WinstonLogger} from '@loopback/logging'
 
 
 /**
@@ -78,17 +76,17 @@ export class InitialDataObserver implements LifeCycleObserver {
                         await itemRepo.createAll(itemsRaw.data.map((raw: TDict) => {
 
                             const groups = (raw?.UniqueName as string || '')
-                                .match(/^(?<rawTier>T\d_)?(?<name>[^@]+)(?<rawQuality>@\d)?$/i)
+                                .match(/^(?<rawTier>T\d_)?(?<name>[^_][^@]+)(?<rawEnchantment>@\d)?$/i)
                                 ?.groups
 
-                            const tier = groups?.rawTier ? Number(groups.rawTier.replace('T', '').replace('_', '')) : undefined
-                            const quality = groups?.rawQuality ? Number(groups.rawQuality.replace('@', '')) : undefined
+                            const tier = 'string' === typeof groups?.rawTier ? Number(groups.rawTier.replace('T', '').replace('_', '')) : undefined
+                            const enchantment = 'string' === typeof groups?.rawEnchantment ? Number(groups.rawEnchantment.replace('@', '')) : undefined
 
                             return {
                                 externalId: raw.Index,
                                 uniqueName: raw.UniqueName,
                                 tier,
-                                quality,
+                                enchantment,
                                 title: ((raw?.LocalizedNames as TDict) || {'RU-RU': undefined})['RU-RU'] || raw?.LocalizationNameVariable,
                                 desc: ((raw?.LocalizedDescriptions as TDict) || {'RU-RU': undefined})['RU-RU'] || raw?.LocalizationDescriptionVariable,
                                 srcData: raw,
