@@ -38,7 +38,7 @@ export class JobsObserver implements LifeCycleObserver {
         @repository(MarketHourRepository) mhRepo: MarketHourRepository,
     ): Promise<void> {
         // Fetch data from API
-        cron.schedule('02 * * * *', async () => {
+        cron.schedule('06 * * * *', async () => {
             console.log('# Fetching data from www.albion-online-data.com...')
 
             const zoneList = await zoneRepo.find({})
@@ -60,16 +60,27 @@ export class JobsObserver implements LifeCycleObserver {
                     try {
                         const marketDataRaw = await axios.get(
                             `https://www.albion-online-data.com/api/v2/stats/prices/${
-                                itemBatch.map(z => z.uniqueName).join(',')
+                                encodeURIComponent(itemBatch.map(i => i.uniqueName).join(','))
                             }?locations=${
-                                zoneBatch.map(i => i.uniqueName).join(',')
+                                encodeURIComponent(zoneBatch.map(z => z.uniqueName).join(','))
                             }`)
                         if ((marketDataRaw?.data || []).length > 0) {
-                            console.log(`# received for ${zi - ii}`)
+                            console.log(`# received for ${zi} - ${ii}`)
 
                             await Promise.all(marketDataRaw.data.map(async (piece: TAODPiece1) => {
-                                const zone = await zoneBatch.find(z => z.uniqueName === piece.city)!
-                                const item = await zoneBatch.find(i => i.uniqueName === piece.item_id)!
+                                const zone = zoneBatch.find(z => z.uniqueName === piece.city)!
+                                const item = itemBatch.find(i => i.uniqueName === piece.item_id)!
+
+                                if(!zone) {
+                                    console.warn(`Skip for zone in ${zi} - ${ii}`)
+                                    console.log(piece)
+                                    return
+                                }
+                                if(!item) {
+                                    console.warn(`Skip for item in ${zi} - ${ii}`)
+                                    console.log(piece)
+                                    return
+                                }
 
                                 for (const direction of ['buy', 'sell']) {
                                     for (const threshold of ['min', 'max']) {
@@ -106,10 +117,16 @@ export class JobsObserver implements LifeCycleObserver {
                             }))
 
                         } else {
-                            console.warn(`# no response for ${zi - ii}`)
+                            console.warn(`# no response for ${zi} - ${ii}`)
                         }
+                        await new Promise(r => setTimeout(r, 70_1000))
                     } catch (e: unknown) {
-                        console.error(`Exception for ${zi - ii} \n${itemBatch.join(',')} \n${zoneBatch.join(',')}\n`, (e as Error).message)
+                        console.error(`Exception for ${zi} - ${ii} \n${itemBatch.map(i => i.uniqueName).join(',')} \n${zoneBatch.map(z => z.uniqueName).join(',')}\n`, (e as Error).message)
+                        console.error(`URL: https://www.albion-online-data.com/api/v2/stats/prices/${
+                            encodeURIComponent(itemBatch.map(i => i.uniqueName).join(','))
+                        }?locations=${
+                            encodeURIComponent(zoneBatch.map(z => z.uniqueName).join(','))
+                        }`)
                     }
                 }
             }
